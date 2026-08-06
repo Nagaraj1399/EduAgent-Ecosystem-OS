@@ -33,15 +33,7 @@
 
 ---
 
-## 🚀 Quick Setup & Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Nagaraj1399/EduAgent-Ecosystem-OS.git](https://github.com/Nagaraj1399/EduAgent-Ecosystem-OS.git)
-   cd EduAgent-Ecosystem-OS
-
-
-   ## 🌐 Project Links & Live Demo
+## 🌐 Project Links & Live Demo
 
 * **🔗 Live Application URL: https://eduagent-os.ai.studio
   ## 🎥 Working Demo Video
