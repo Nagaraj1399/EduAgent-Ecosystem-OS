@@ -44,4 +44,6 @@
    ## 🌐 Project Links & Live Demo
 
 * **🔗 Live Application URL: https://eduagent-os.ai.studio
-* **🎥 Video Demonstration:** 
+  ## 🎥 Working Demo Video
+* **Watch Full Demo Walkthrough:** [Click here to watch the project demo on Google Drive](https://drive.google.com/file/d/14hlfvs-kGvvAOvfl6-9Hj-u11QSju_SV/view?usp=drive_link)
+   
