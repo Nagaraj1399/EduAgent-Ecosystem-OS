@@ -1,0 +1,6 @@
+{
+  "name": "EduAgent OS",
+  "description": "Enterprise 3-Portal EdTech AI Ecosystem powered by Gemini Multimodal AI for Students, Teachers, and Parents.",
+  "requestFramePermissions": ["microphone", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
