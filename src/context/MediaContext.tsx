@@ -13,6 +13,7 @@ interface MediaContextType {
   setTranscript: React.Dispatch<React.SetStateAction<string>>;
   toggleMic: () => void;
   toggleCamera: () => void;
+  requestCamera: () => Promise<void>;
   startListening: (languageCode?: string) => void;
   stopListening: () => string;
   resetMediaState: () => void;
@@ -56,6 +57,19 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     return () => clearInterval(interval);
   }, [mediaState]);
+
+  // Attach stream to video element when mounted
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (videoRef.current && mediaStreamRef.current) {
+        if (videoRef.current.srcObject !== mediaStreamRef.current) {
+          videoRef.current.srcObject = mediaStreamRef.current;
+          videoRef.current.play().catch(() => {});
+        }
+      }
+    }, 300);
+    return () => clearInterval(interval);
+  }, []);
 
   // Virtual Camera Canvas Fallback for WebRTC stream
   const startVirtualCameraStream = useCallback(() => {
@@ -114,6 +128,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (virtualStream) {
         mediaStreamRef.current = virtualStream;
         setHasCameraStream(true);
+        setIsCameraOn(true);
         setCameraError(null);
         if (videoRef.current) {
           videoRef.current.srcObject = virtualStream;
@@ -136,10 +151,12 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-          audio: false,
+          audio: true,
         });
         mediaStreamRef.current = stream;
         setHasCameraStream(true);
+        setIsCameraOn(true);
+        setIsMicMuted(false);
         setCameraError(null);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -147,7 +164,24 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
         return;
       } catch (_err) {
-        // Fallback to virtual camera
+        // Try video only before fallback
+        try {
+          const videoOnlyStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+            audio: false,
+          });
+          mediaStreamRef.current = videoOnlyStream;
+          setHasCameraStream(true);
+          setIsCameraOn(true);
+          setCameraError(null);
+          if (videoRef.current) {
+            videoRef.current.srcObject = videoOnlyStream;
+            videoRef.current.play().catch(() => {});
+          }
+          return;
+        } catch (_) {
+          // Fallback to virtual camera
+        }
       }
     }
 
@@ -257,6 +291,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setTranscript,
         toggleMic,
         toggleCamera,
+        requestCamera,
         startListening,
         stopListening,
         resetMediaState,

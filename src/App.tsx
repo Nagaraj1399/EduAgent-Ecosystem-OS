@@ -7,6 +7,7 @@ import { LandingPage, demoUsers } from './components/LandingPage';
 import { StudentPortal } from './components/StudentPortal/StudentPortal';
 import { TeacherPortal } from './components/TeacherPortal/TeacherPortal';
 import { ParentPortal } from './components/ParentPortal/ParentPortal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Cpu, Terminal, Shield, Zap } from 'lucide-react';
 
 export default function App() {
@@ -68,23 +69,25 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {portal === 'Landing' && <LandingPage onLoginAs={handleLoginAs} />}
+        <ErrorBoundary resetKey={portal} fallbackTitle={`${portal} Portal Execution Warning`}>
+          {portal === 'Landing' && <LandingPage onLoginAs={handleLoginAs} />}
 
-        {portal === 'Student' && (
-          <StudentPortal language={language} onSetModality={setFeature} />
-        )}
+          {portal === 'Student' && (
+            <StudentPortal language={language} onSetModality={setFeature} />
+          )}
 
-        {portal === 'Teacher' && (
-          <TeacherPortal language={language} onSetModality={setFeature} />
-        )}
+          {portal === 'Teacher' && (
+            <TeacherPortal language={language} onSetModality={setFeature} />
+          )}
 
-        {portal === 'Parent' && (
-          <ParentPortal
-            language={language}
-            onLanguageChange={setLanguage}
-            onSetModality={setFeature}
-          />
-        )}
+          {portal === 'Parent' && (
+            <ParentPortal
+              language={language}
+              onLanguageChange={setLanguage}
+              onSetModality={setFeature}
+            />
+          )}
+        </ErrorBoundary>
       </main>
 
       {/* Enterprise System Status Footer */}

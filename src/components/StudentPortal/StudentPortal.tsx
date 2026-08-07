@@ -8,6 +8,7 @@ import { SpacedRetrieval } from './SpacedRetrieval';
 import { DisengagementStudio } from './DisengagementStudio';
 import { SkillGapMatrix } from './SkillGapMatrix';
 import { EngineeringTasks } from './EngineeringTasks';
+import { ErrorBoundary } from '../ErrorBoundary';
 import {
   getActiveStudentSession,
   setActiveStudentSession,
@@ -163,8 +164,8 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality }) => {
         })}
       </div>
 
-      {/* Active Tab View */}
-      <div>
+      {/* Active Tab View Wrapped in Fault Isolation ErrorBoundary */}
+      <ErrorBoundary resetKey={activeTab} fallbackTitle={`${activeTab.toUpperCase()} Module Error`}>
         {activeTab === 'vision' && <VisionQA language={language} onSetModality={onSetModality} />}
         {activeTab === 'interview' && <VoiceInterview language={language} onSetModality={onSetModality} />}
         {activeTab === 'tasks' && <EngineeringTasks language={language} />}
@@ -172,7 +173,7 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality }) => {
         {activeTab === 'spaced' && <SpacedRetrieval language={language} />}
         {activeTab === 'analogy' && <DisengagementStudio language={language} onSetModality={onSetModality} />}
         {activeTab === 'skillgap' && <SkillGapMatrix language={language} onSetModality={onSetModality} />}
-      </div>
+      </ErrorBoundary>
     </div>
   );
 };
