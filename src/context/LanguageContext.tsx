@@ -2006,6 +2006,10 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+/**
+ * React Context Provider component for managing active Pan-India language selection,
+ * dictionary translations, and dynamic server-side Gemini text translations.
+ */
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageType>(() => {
     if (typeof window !== 'undefined') {
@@ -2237,6 +2241,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
+/**
+ * Custom React hook to consume active language state and translation functions.
+ *
+ * @returns LanguageContextType object
+ */
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {

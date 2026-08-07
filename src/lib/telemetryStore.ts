@@ -163,6 +163,11 @@ const LOCAL_STORAGE_SESSION_KEY = 'eduagent_active_student_session';
 const LOCAL_STORAGE_STUDENTS_KEY = 'eduagent_all_students_profiles';
 const LOCAL_STORAGE_SUBMISSIONS_KEY = 'eduagent_activity_submissions';
 
+/**
+ * Retrieves the currently active student profile session from local storage or defaults.
+ *
+ * @returns Active StudentProfile object
+ */
 export function getActiveStudentSession(): StudentProfile {
   if (typeof window === 'undefined') return INITIAL_STUDENT_PROFILES[0];
   try {
@@ -174,6 +179,11 @@ export function getActiveStudentSession(): StudentProfile {
   return INITIAL_STUDENT_PROFILES[0];
 }
 
+/**
+ * Persists selected active student session and emits re-render event.
+ *
+ * @param session StudentProfile to activate
+ */
 export function setActiveStudentSession(session: StudentProfile) {
   if (typeof window === 'undefined') return;
   try {
@@ -185,6 +195,11 @@ export function setActiveStudentSession(session: StudentProfile) {
   }
 }
 
+/**
+ * Reads all student profiles from persistent browser local storage.
+ *
+ * @returns Array of StudentProfile objects
+ */
 export function getAllStudentProfiles(): StudentProfile[] {
   if (typeof window === 'undefined') return INITIAL_STUDENT_PROFILES;
   try {
@@ -196,6 +211,11 @@ export function getAllStudentProfiles(): StudentProfile[] {
   return INITIAL_STUDENT_PROFILES;
 }
 
+/**
+ * Saves all student telemetry profiles to local storage and dispatches update event.
+ *
+ * @param profiles Array of StudentProfile records to save
+ */
 export function saveAllStudentProfiles(profiles: StudentProfile[]) {
   if (typeof window === 'undefined') return;
   try {
@@ -206,6 +226,12 @@ export function saveAllStudentProfiles(profiles: StudentProfile[]) {
   }
 }
 
+/**
+ * Retrieves activity submissions list, optionally filtered by student ID.
+ *
+ * @param studentId Optional student ID filter
+ * @returns Array of ActivitySubmission records
+ */
 export function getActivitySubmissions(studentId?: string): ActivitySubmission[] {
   if (typeof window === 'undefined') return INITIAL_SUBMISSIONS;
   let submissions = INITIAL_SUBMISSIONS;
@@ -222,6 +248,12 @@ export function getActivitySubmissions(studentId?: string): ActivitySubmission[]
   return submissions;
 }
 
+/**
+ * Records a new student learning activity submission, recalculates risk tiers, and syncs backend API.
+ *
+ * @param submission Activity submission payload
+ * @returns Generated ActivitySubmission record
+ */
 export function recordStudentActivity(submission: Omit<ActivitySubmission, 'id' | 'timestamp'>) {
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const newSub: ActivitySubmission = {

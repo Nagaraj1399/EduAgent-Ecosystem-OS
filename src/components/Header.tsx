@@ -27,6 +27,12 @@ interface Props {
   onLogout: () => void;
 }
 
+/**
+ * Global Header component providing EduAgent OS brand identity,
+ * active portal indicator, multi-language selector, and user profile session management.
+ *
+ * @param props Props containing active portal, user session, language handlers, and logout callbacks
+ */
 export const Header: React.FC<Props> = ({
   activePortal,
   onPortalChange,
