@@ -10,6 +10,13 @@
 
 ---
 
+## 🌐 Live Application & Deployment Links
+
+- 🚀 **Live Production Application:** [https://ais-pre-aoar7o6dxaxbt242xa7kff-342455903858.asia-southeast1.run.app](https://ais-pre-aoar7o6dxaxbt242xa7kff-342455903858.asia-southeast1.run.app)
+- ⚡ **Development Environment:** [https://ais-dev-aoar7o6dxaxbt242xa7kff-342455903858.asia-southeast1.run.app](https://ais-dev-aoar7o6dxaxbt242xa7kff-342455903858.asia-southeast1.run.app)
+
+---
+
 ## 🌟 Key Ecosystem Features
 
 ### 🎓 1. Student Portal
