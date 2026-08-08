@@ -389,30 +389,43 @@ app.post('/api/ai/mock-interview', async (req, res) => {
       }
 
       const prompt = `You are an AI Technical Resume & Skill Gap Analyzer for MNC engineering hires.
-Analyze the following candidate resume text:
+
+CONTEXT EXTRACTION PROMPT (RESUME PARSING):
+Analyze candidate resume data (including projects such as PHP Credit Card Fraud Detection, Python Secure Door Lock, and all candidate listed projects).
+Extract technical competencies, stack frameworks, and architecture experience.
+Generate 5 distinct, non-repeating progressive interview questions tailored to the candidate's real stack.
+
+Candidate Resume Text:
 """
 ${resumeText.slice(0, 4000)}
 """
 
 Task:
-Provide a structured assessment of technical strengths, skill gaps/weaknesses, and actionable improvement recommendations for senior engineering interviews.
+Provide a structured assessment of technical strengths, skill gaps/weaknesses, actionable recommendations, and 5 distinct progressive question topics based on candidate resume data.
 
-Output MUST be a raw JSON object with this exact schema (no markdown fences around JSON if possible):
+Output MUST be a raw JSON object with this exact schema:
 {
   "strengths": [
-    "Specific core strength 1 with evidence from resume",
-    "Specific core strength 2 with evidence from resume",
-    "Specific core strength 3 with evidence from resume"
+    "Specific core strength with evidence from resume",
+    "Specific core strength with evidence from resume",
+    "Specific core strength with evidence from resume"
   ],
   "weaknesses": [
-    "Specific skill gap or missing modern practice 1",
-    "Specific skill gap or missing modern practice 2",
-    "Specific skill gap or missing modern practice 3"
+    "Specific skill gap or architecture topic requiring scrutiny",
+    "Specific skill gap or missing modern practice",
+    "Specific skill gap or latency/concurrency consideration"
   ],
   "recommendations": [
     "Actionable interview preparation recommendation 1",
     "Actionable interview preparation recommendation 2",
     "Actionable interview preparation recommendation 3"
+  ],
+  "progressiveQuestions": [
+    "Q1: Technical challenge on core project/framework",
+    "Q2: Concurrency & thread safety deep-dive",
+    "Q3: Fault isolation & security vulnerability analysis",
+    "Q4: Scalability & high-throughput system trade-offs",
+    "Q5: System resilience & production incident recovery"
   ],
   "targetRole": "Extracted target role (e.g. Senior Full-Stack Engineer)",
   "readinessScore": 85
@@ -462,37 +475,39 @@ Output MUST be a raw JSON object with this exact schema (no markdown fences arou
     if (action === 'generate_5_star_questions') {
       const candidateExperience = resumeText && resumeText.trim().length > 0 
         ? `Candidate Resume Context:\n${resumeText.slice(0, 4000)}`
-        : 'Candidate Experience: Senior Software Engineer profile.';
+        : 'Candidate Experience: Full-Stack Developer profile with React, Node.js, Python, and Cloud projects.';
 
-      const prompt = `You are an AI Technical Interview Question Generator.
+      const prompt = `You are a professional STAR Interview Question Generator for MNC recruiters.
+Input: Candidate Resume (${candidateExperience})
 
-${candidateExperience}
+Task: Generate 5 unique STAR (Situation, Task, Action, Result) interview questions strictly based on the candidate’s resume skills, projects, and technologies.
 
-Task: Generate 5 unique technical & behavioral interview questions directly derived from the candidate's resume projects, tech stack, and accomplishments.
+Constraints:
+- Do NOT use fixed categories (Leadership, Teamwork, etc.).
+- Each question must directly reference resume content (skills, certifications, projects, tools).
+- Avoid repetition; ensure variety across technical and behavioral aspects.
+- Keep questions recruiter-ready, concise, and professional.
+- Output only the questions (numbered 1 to 5), with NO explanations or intro text.
 
-Output MUST follow this EXACT format:
+Example Output format required:
+1. In your project using [Skill/Tech/Framework], describe a situation where you faced [challenge/performance issue]. What task did you set, what actions did you take, and what was the result?
+2. You mentioned [certification/tool/project claim]. Share a STAR example where you resolved a critical issue under time pressure.
+3. During your [project/internship/experience], explain a STAR scenario where you applied [technology/principle] in practice.
+4. From your work on [specific project/role], recall a STAR case where you collaborated with a team to deliver [specific module/system].
+5. In your [hackathon/initiative/system build], describe a STAR situation where you innovated a solution that stood out.
 
-Department: Resume-Driven Technical Evaluation
-Resume Highlights: [Extracted key skills, projects, or claims from resume]
-STAR Questions:
-   1. [Question referencing project #1]
-   2. [Question referencing architecture/tech stack claim #1]
-   3. [Question probing technical trade-offs or scalability]
-   4. [Behavioral/Leadership question on engineering delivery]
-   5. [System design/edge-case challenge]
-
-Generate output in ${language}.`;
+Generate output in ${language}. Output ONLY the 5 numbered questions.`;
 
       if (ai) {
         const response = await generateContentWithRetry(ai, {
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          config: { temperature: 0.8 },
+          config: { temperature: 0.7 },
         });
 
         if (response?.text) {
           return res.json({
             routingHeader,
-            department: 'Resume-Driven Evaluation',
+            department: 'MNC Recruiter STAR Evaluation',
             response: response.text.trim(),
           });
         }
@@ -500,8 +515,8 @@ Generate output in ${language}.`;
 
       return res.json({
         routingHeader,
-        department: 'Resume-Driven Evaluation',
-        response: `Department: Resume-Driven Evaluation\nResume Highlights: Microservices, Distributed Systems, Node.js, Cloud Native\nSTAR Questions:\n   1. Based on your backend project experience, how did you handle service latency spikes and cache invalidation?\n   2. Walk us through a complex technical outage you resolved and the metrics you tracked.\n   3. How do you design zero-downtime database migrations under high traffic?\n   4. Describe a time you advocated for architectural refactoring against tight product deadlines.\n   5. How do you balance system security with developer velocity in microservices?`,
+        department: 'MNC Recruiter STAR Evaluation',
+        response: `1. In your project using React and Node.js, describe a situation where you faced performance issues. What task did you set, what actions did you take, and what was the result?\n2. You mentioned troubleshooting IT Help Desk tickets. Share a STAR example where you resolved a critical issue under time pressure.\n3. During your Google Cloud certification learning, explain a STAR scenario where you applied cloud security principles in practice.\n4. From your internship at Intellia Sofpro, recall a STAR case where you collaborated with a team to deliver a web module.\n5. In your AI hackathon participation, describe a STAR situation where you innovated a solution that stood out.`,
       });
     }
 
@@ -534,6 +549,15 @@ REAL-TIME RESUME SKILL GAP & READINESS ANALYSIS:
 
       const systemInstruction = `You are an Elite Senior Principal Engineer and Bar-Raiser conducting a live technical interview.
 
+CONTEXT EXTRACTION & RESUME PARSING:
+Analyze candidate resume data (including projects such as PHP Credit Card Fraud Detection, Python Secure Door Lock, and all listed candidate projects).
+Extract technical competencies, stack frameworks, and architecture experience.
+
+SEQUENTIAL STATE PROMPT (ZERO-LOOP PROTECTION):
+Maintain strict array indexing (Q1 through Q5).
+Ensure that once a response is submitted and processed, the state pointer increments cleanly to Question #${questionNumber}.
+Prevent historical caching loops or repetitive questioning. Never repeat previously asked questions.
+
 CANDIDATE RESUME TEXT:
 """
 ${resumeText.slice(0, 4000)}
@@ -542,9 +566,9 @@ ${liveAnalysisPayload}
 
 MANDATORY INTERVIEWING RULES:
 1. Read the candidate's actual detected tech stack, projects, strengths, and skill gaps from their resume and analysis above.
-2. Read the candidate's actual detected tech stack and generate a unique, non-repeating technical challenge with 2 distinct deliverables. Do NOT use fallback templates or generic placeholder strings like "Based on your resume context regarding Candidate Technical Profile".
+2. Read the candidate's actual detected tech stack and generate a unique, non-repeating technical challenge with 2 distinct deliverables for Question #${questionNumber} of 5. Do NOT use fallback templates or generic placeholder strings like "Based on your resume context regarding Candidate Technical Profile".
 3. The question MUST directly reference a specific project, technology, framework, or system architecture from the candidate's resume or skill analysis.
-4. Ask Question #${questionNumber} of 5 in the interview sequence.
+4. Ask Question #${questionNumber} of 5 in the interview sequence. State pointer must strictly equal Question #${questionNumber}.
 5. ${askedQuestionsConstraint}
 6. Target Role: ${targetRole}
 7. Language: ${language} (${langCode})
